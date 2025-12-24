@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyFun Foods - Menu & Ordering</title>
+    <link rel="stylesheet" href="./css/style2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Additional Styles for Simplified Order Flow */
+        .ordering-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .checkout-floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--gradient-secondary);
+            color: var(--white);
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(109, 187, 69, 0.4);
+            z-index: 100;
+            border: none;
+            cursor: pointer;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .checkout-floating-btn.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .checkout-floating-btn .cart-count {
+            background: var(--accent-color);
+            color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .order-type-selection {
+            background: var(--section-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+            border: 2px solid var(--gray-medium);
+        }
+        
+        .order-type-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .order-type-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .order-type-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .order-type-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: var(--white);
+            border: 2px solid var(--gray-medium);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .order-type-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .order-type-option.selected {
+            border-color: var(--secondary-color);
+            background: rgba(109, 187, 69, 0.05);
+            box-shadow: 0 5px 15px rgba(109, 187, 69, 0.1);
+        }
+        
+        .order-type-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--white);
+            flex-shrink: 0;
+        }
+        
+        .order-type-option:nth-child(2) .order-type-icon {
+            background: var(--gradient-accent);
+        }
+        
+        .order-type-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        
+        .order-type-info p {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+        
+        .confirmation-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .confirmation-actions .order-btn {
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        .print-receipt-btn {
+            background: var(--gradient-primary) !important;
+        }
+        
+        .receipt-container {
+            background: var(--white);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+        }
+        
+        .receipt-container.show {
+            display: block;
+        }
+        
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px solid var(--gray-medium);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .receipt-header h3 {
+            font-size: 24px;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        
+        .receipt-header p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .receipt-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .receipt-section {
+            margin-bottom: 25px;
+        }
+        
+        .receipt-section h4 {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .receipt-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .receipt-items th {
+            text-align: left;
+            padding: 12px 0;
+            border-bottom: 2px solid var(--gray-medium);
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        
+        .receipt-items td {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .receipt-items .total-row {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .receipt-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid var(--gray-medium);
+            margin-top: 30px;
+        }
+        
+        .receipt-footer p {
+            color: var(--text-light);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .back-to-menu-btn {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            background: var(--gradient-primary);
+            color: var(--white);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 99;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .back-to-menu-btn:hover {
+            transform: translateX(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        @media (max-width: 768px) {
+            .back-to-menu-btn {
+                top: auto;
+                bottom: 20px;
+                left: 20px;
+                font-size: 13px;
+                padding: 10px 20px;
+            }
+            
+            .checkout-floating-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                font-size: 14px;
+            }
+            
+            .receipt-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .product-pricing {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 25px;
+            padding: 15px 0;
+            border-top: 1px solid var(--gray-light);
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--gray-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .qty-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .qty-input {
+            width: 50px;
+            height: 36px;
+            text-align: center;
+            border: 2px solid var(--gray-medium);
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .add-to-cart-btn {
+            display: block;
+            width: calc(100% - 50px);
+            margin: 0 25px 25px;
+            padding: 15px;
+            background: var(--gradient-accent);
+            color: var(--white);
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .add-to-cart-btn:hover {
+            background: var(--gradient-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(58, 169, 214, 0.3);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        .cart-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: var(--gradient-secondary);
+            color: var(--white);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cart-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .simplified-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-simple-btn {
+            background: var(--gradient-primary);
+            color: var(--white);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        
+        .nav-simple-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(58, 169, 214, 0.3);
+        }
+        
+        .nav-simple-btn.home-btn {
+            background: var(--gradient-secondary);
+        }
+        
+        .nav-simple-btn.menu-btn {
+            background: var(--gradient-accent);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Simplified Header -->
+    <header>
+        <nav class="navbar">
+            <div class="simplified-nav">
+                <div class="nav-left">
+                    <div class="logo">
+                        <img src="./image/hyfunlogo.png" alt="HyFun Foods Logo">
+                    </div>
+                </div>
+                <div class="nav-right">
+                    <a href="index.html" class="nav-simple-btn home-btn">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="Products.html" class="nav-simple-btn">
+                        <i class="fas fa-box"></i> Products
+                    </a>
+                    <a href="Menu.html" class="nav-simple-btn menu-btn">
+                        <i class="fas fa-shopping-cart"></i> Menu & Order
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="menu-page">
+        <!-- Page Title -->
+        <section class="page-title">
+            <div class="container">
+                <h1>Frozen Food Products Menu</h1>
+                <p class="page-subtitle">Order premium quality frozen snacks and ready-to-cook products. Fresh, hygienic, and delivered to your doorstep.</p>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <div class="container">
+            <div class="ordering-layout">
+                <!-- Menu Products Section -->
+                <div class="menu-products-section">
+                    <!-- Category Navigation -->
+                    <div class="category-nav">
+                        <ul class="category-list">
+                            <li class="category-item">
+                                <button class="category-btn active" data-category="all">All Products</button>
+                            </li>
+                            <li class="category-item">
+                                <button class="category-btn" data-category="fries">French Fries</button>
+                            </li>
+                            <li class="category-item">
+                                <button class="category-btn" data-category="potato">Potato Specialties</button>
+                            </li>
+                            <li class="category-item">
+                                <button class="category-btn" data-category="veggie">Veggie Specialties</button>
+                            </li>
+                            <li class="category-item">
+                                <button class="category-btn" data-category="indian">Indian Ethnic</button>
+                            </li>
+                            <li class="category-item">
+                                <button class="category-btn" data-category="baked">Baked Snacks</button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="products-container active" id="all-products">
+                        <h2 class="category-title">All Products</h2>
+                        <div class="products-grid">
+                            <!-- Products will be dynamically loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Category-specific containers (hidden by default) -->
+                    <div class="products-container" id="fries-products">
+                        <h2 class="category-title">French Fries Range</h2>
+                        <div class="products-grid" id="fries-grid"></div>
+                    </div>
+                    
+                    <div class="products-container" id="potato-products">
+                        <h2 class="category-title">Potato Specialties</h2>
+                        <div class="products-grid" id="potato-grid"></div>
+                    </div>
+                    
+                    <div class="products-container" id="veggie-products">
+                        <h2 class="category-title">Veggie Specialties</h2>
+                        <div class="products-grid" id="veggie-grid"></div>
+                    </div>
+                    
+                    <div class="products-container" id="indian-products">
+                        <h2 class="category-title">Indian Ethnic</h2>
+                        <div class="products-grid" id="indian-grid"></div>
+                    </div>
+                    
+                    <div class="products-container" id="baked-products">
+                        <h2 class="category-title">Baked Snacks</h2>
+                        <div class="products-grid" id="baked-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Checkout Button -->
+        <button class="checkout-floating-btn" id="checkout-floating-btn">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Proceed to Checkout</span>
+            <span class="cart-count" id="floating-cart-count">0</span>
+        </button>
+        
+        <!-- Bulk Order Banner -->
+        <div class="container">
+            <div class="bulk-order-banner">
+                <div class="bulk-order-content">
+                    <h3>Need Bulk Order for Restaurants or Events?</h3>
+                    <p>Special discounts available for bulk orders above ₹5000. Contact us for custom pricing, packaging, and delivery arrangements for restaurants, catering services, and events.</p>
+                    <button class="bulk-order-btn" id="bulk-order-button">
+                        <i class="fas fa-users"></i> Inquire for Bulk Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Step 1: Your Order Summary -->
+    <div class="order-modal" id="your-order-modal">
+        <div class="order-modal-content">
+            <button class="close-order-modal" id="close-your-order-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="order-modal-header">
+                <h2>Your Order Summary</h2>
+                <p class="order-modal-subtitle">Review your items before proceeding</p>
+            </div>
+            
+            <div class="order-modal-body">
+                <div class="cart-summary-modal">
+                    <div class="cart-items-container" id="modal-cart-items">
+                        <!-- Cart items will be dynamically added here -->
+                    </div>
+                    
+                    <div class="cart-totals">
+                        <div class="total-row">
+                            <span>Subtotal</span>
+                            <span class="subtotal-amount">₹0</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Delivery Fee</span>
+                            <span class="delivery-fee">₹49</span>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span>Total Amount</span>
+                            <span class="grand-total-amount">₹49</span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-type-selection">
+                        <h3 class="order-type-title">
+                            <i class="fas fa-box"></i> Select Order Type
+                        </h3>
+                        <div class="order-type-options">
+                            <div class="order-type-option" data-type="retail">
+                                <div class="order-type-icon">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                                <div class="order-type-info">
+                                    <h4>Retail Pack</h4>
+                                    <p>Standard packaging for individual/family use. Quantity: 1-10 units per product.</p>
+                                </div>
+                            </div>
+                            <div class="order-type-option" data-type="bulk">
+                                <div class="order-type-icon">
+                                    <i class="fas fa-pallet"></i>
+                                </div>
+                                <div class="order-type-info">
+                                    <h4>Bulk Pack</h4>
+                                    <p>Special packaging for restaurants/events. Minimum order: ₹5000. Special discounts apply.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="checkout-btn" id="confirm-order-btn">
+                        <i class="fas fa-check-circle"></i> Confirm Order & Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Complete Your Order -->
+    <div class="order-modal" id="checkout-modal">
+        <div class="order-modal-content">
+            <a href="#" class="back-to-menu-btn" id="back-to-order-summary">
+                <i class="fas fa-arrow-left"></i> Back to Order
+            </a>
+            
+            <div class="order-modal-header">
+                <h2>Complete Your Order</h2>
+                <p class="order-modal-subtitle">Please fill in your details to complete the purchase</p>
+            </div>
+            
+            <div class="order-modal-body">
+                <form id="order-form" class="order-form">
+                    <div class="order-type-display mb-30">
+                        <div class="highlight-box">
+                            <p><i class="fas fa-info-circle"></i> <strong>Order Type:</strong> <span id="selected-order-type">Retail Pack</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customer-name">Full Name *</label>
+                            <input type="text" id="customer-name" name="customer-name" required placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-phone">Phone Number *</label>
+                            <input type="tel" id="customer-phone" name="customer-phone" required placeholder="Enter your 10-digit number" pattern="[0-9]{10}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customer-email">Email Address</label>
+                            <input type="email" id="customer-email" name="customer-email" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="delivery-date">Preferred Delivery Date *</label>
+                            <input type="date" id="delivery-date" name="delivery-date" required min="">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="delivery-address">Delivery Address *</label>
+                        <textarea id="delivery-address" name="delivery-address" required rows="3" placeholder="Enter your complete delivery address with landmark"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="special-instructions">Special Instructions (Optional)</label>
+                        <textarea id="special-instructions" name="special-instructions" rows="2" placeholder="Any special requests or delivery instructions"></textarea>
+                    </div>
+                    
+                    <div class="order-summary-review">
+                        <h4>Order Summary</h4>
+                        <div class="review-items" id="checkout-review-items">
+                            <!-- Order items will be dynamically added here -->
+                        </div>
+                        <div class="review-totals">
+                            <div class="total-row">
+                                <span>Subtotal</span>
+                                <span class="review-subtotal">₹0</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Delivery Fee</span>
+                                <span class="review-delivery">₹49</span>
+                            </div>
+                            <div class="total-row grand-total">
+                                <span>Total Amount</span>
+                                <span class="review-total">₹49</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-order-btn">
+                        <i class="fas fa-paper-plane"></i> Place Order Now
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Order Confirmation -->
+    <div class="order-modal" id="confirmation-modal">
+        <div class="order-modal-content">
+            <div class="order-modal-header" style="background: var(--gradient-secondary);">
+                <h2>Order Confirmed!</h2>
+                <p class="order-modal-subtitle">Thank you for your order with HyFun Foods</p>
+            </div>
+            
+            <div class="order-modal-body">
+                <div class="confirmation-content text-center">
+                    <div class="confirmation-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Your order has been received</h3>
+                    <p class="order-id">Order ID: <strong id="order-id-display">HYFUN-HYFUN-0000</strong></p>
+                    <p>We've sent a confirmation to your phone number. Our team will contact you shortly to confirm delivery details.</p>
+                    
+                    <div class="order-details">
+                        <h4>Order Details</h4>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Delivery Date:</span>
+                                <span class="detail-value" id="confirmation-date">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Total Amount:</span>
+                                <span class="detail-value" id="confirmation-total">₹0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Order Type:</span>
+                                <span class="detail-value" id="confirmation-order-type">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Delivery To:</span>
+                                <span class="detail-value" id="confirmation-name">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="confirmation-actions">
+                        <button class="order-btn print-receipt-btn" id="print-order-receipt">
+                            <i class="fas fa-print"></i> Print Order Receipt
+                        </button>
+                        <button class="order-btn" id="new-order" style="background: var(--gradient-primary);">
+                            <i class="fas fa-shopping-cart"></i> Start New Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt for Printing -->
+    <div class="receipt-container" id="receipt-container">
+        <div class="receipt-header">
+            <h3>HyFun Foods</h3>
+            <p>Frozen Food Products</p>
+            <p>Order Receipt</p>
+        </div>
+        
+        <div class="receipt-details">
+            <div class="receipt-section">
+                <h4>Order Information</h4>
+                <p><strong>Order ID:</strong> <span id="receipt-order-id">--</span></p>
+                <p><strong>Date:</strong> <span id="receipt-date">--</span></p>
+                <p><strong>Order Type:</strong> <span id="receipt-order-type">--</span></p>
+            </div>
+            
+            <div class="receipt-section">
+                <h4>Customer Information</h4>
+                <p><strong>Name:</strong> <span id="receipt-customer-name">--</span></p>
+                <p><strong>Phone:</strong> <span id="receipt-customer-phone">--</span></p>
+                <p><strong>Email:</strong> <span id="receipt-customer-email">--</span></p>
+            </div>
+        </div>
+        
+        <div class="receipt-section">
+            <h4>Delivery Information</h4>
+            <p><strong>Delivery Date:</strong> <span id="receipt-delivery-date">--</span></p>
+            <p><strong>Address:</strong> <span id="receipt-delivery-address">--</span></p>
+            <p><strong>Instructions:</strong> <span id="receipt-instructions">--</span></p>
+        </div>
+        
+        <div class="receipt-section">
+            <h4>Order Items</h4>
+            <table class="receipt-items" id="receipt-items-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="receipt-items-body">
+                    <!-- Items will be added here -->
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="3">Subtotal</td>
+                        <td id="receipt-subtotal">₹0</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="3">Delivery Fee</td>
+                        <td id="receipt-delivery-fee">₹49</td>
+                    </tr>
+                    <tr class="total-row" style="font-size: 18px;">
+                        <td colspan="3"><strong>Total Amount</strong></td>
+                        <td id="receipt-total"><strong>₹49</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <div class="receipt-footer">
+            <p>Thank you for your order! For any queries, contact us at +91 75750 02999 or customerservice@hyfunfoods.com</p>
+            <p>HyFun Foods - Spreading Health & Happiness</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3 class="footer-title">CORPORATE OFFICE</h3>
+                    <p class="footer-text">
+                        The Acropolis Mall, Block C, 3rd Floor, Office No: 3, 4 & 5, Above Hometown, Thaltej, Ahmedabad – 380059
+                    </p>
+
+                    <h3 class="footer-title">PRODUCTION UNIT</h3>
+                    <p class="footer-text">
+                        Survey No. 337, Ganeshpura, Mehsana-Ahmedabad Highway, Dist. Mehsana – 384450, Gujarat, India.
+                    </p>
+                </div>
+
+                <div class="footer-column">
+                    <h3 class="footer-title">Sales & Marketing OFFICE</h3>
+                    <p class="footer-text">
+                        COWRKS Gurgaon, 5th Floor, Tower A, Building10, DLF Cyber City, DLF Phase 2, Sector 24, Gurugram-122002
+                    </p>
+
+                    <h3 class="footer-title">Contact Us</h3>
+                    <div class="contact-info">
+                        <p class="footer-text"><strong>Sales</strong>: sales@hyfunfoods.com</p>
+                        <p class="footer-text"><strong>Inquiry</strong>: info@hyfunfoods.com</p>
+                        <p class="footer-text">customerservice@hyfunfoods.com</p>
+                        <p class="footer-text"><strong>Ph No.</strong>: +91 75750 02999</p>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h3 class="footer-title">LINKS</h3>
+                    <ul class="footer-links-list">
+                        <li><a href="about.html" class="footer-link">About Us</a></li>
+                        <li><a href="SeedtoShelf.html" class="footer-link">Seed to Shelf</a></li>
+                        <li><a href="Products.html" class="footer-link">Our Products</a></li>
+                        <li><a href="Exports.html" class="footer-link">Exports</a></li>
+                        <li><a href="NewsandEvents.html" class="footer-link">News and Events</a></li>
+                        <li><a href="OurCulture.html" class="footer-link">Our Culture</a></li>
+                        <li><a href="Menu.html" class="footer-link">Menu & Order</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column cert-column">
+                    <h3 class="footer-title">Certifications</h3>
+                    <div class="certification-logos">
+                        <img src="./image/brc.jpeg" alt="BRC Certification">
+                        <img src="./image/fssai.jpg" alt="fssai Certification">
+                    </div>
+                </div>
+            </div>
+
+            <hr class="footer-divider">
+
+            <div class="footer-bottom">
+                <div class="copyright-text">
+                    <p>&copy; 2021 HyFun Foods. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add to cart notification -->
+    <div class="cart-notification" id="cart-notification">
+        <div class="notification-content">
+            <i class="fas fa-check-circle"></i>
+            <span>Item added to cart!</span>
+        </div>
+    </div>
+
+    <script src="menu.js"></script>
+</body>
+</html>

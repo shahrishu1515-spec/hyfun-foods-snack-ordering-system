@@ -1180,7 +1180,7 @@ textarea.form-control {
    ============================================ */
 /* Footer */
 .footer {
-    background: #f8f8f8;
+    background: #24292E;
     color: #333;
     padding: 30px 0 15px;
     border-top: 1px solid #e0e0e0;
@@ -1204,7 +1204,7 @@ textarea.form-control {
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 12px;
-    color: #222;
+    color: #3aa9d6;   /* ✅ changed here */
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-family: Arial, sans-serif;
@@ -1213,10 +1213,14 @@ textarea.form-control {
     align-items: center;
 }
 
+
+.footer-title h3{
+    color: #3aa9d6;
+}
 .footer-text {
     font-size: 12px;
     line-height: 1.5;
-    color: #555;
+    color: #ffffff;
     margin-bottom: 15px;
     font-family: Arial, sans-serif;
 }
@@ -1229,7 +1233,7 @@ textarea.form-control {
 .contact-info .footer-text strong {
     min-width: 55px;
     display: inline-block;
-    color: #333;
+    color:#6DBB45;
 }
 
 /* Links List - Clean and minimal */
@@ -1249,7 +1253,7 @@ textarea.form-control {
 }
 
 .footer-link {
-    color: #555;
+    color: #ffffff;
     text-decoration: none;
     font-size: 12px;
     font-family: Arial, sans-serif;
@@ -1257,28 +1261,43 @@ textarea.form-control {
 }
 
 .footer-link:hover {
-    color: #000;
+    color: #6DBB45;
     text-decoration: underline;
 }
 
 /* Certifications Column */
 .cert-column {
     display: flex;
+    align-items: center;
     flex-direction: column;
 }
 
 .certification-logos {
-    margin-top: 5px;
+    margin-top: 10px;
+    display: flex;            
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;                  
+}
+.certification-logos img {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
+    background: #ffffff;       
+    padding: 4px;
+    border-radius: 4px;
 }
 
 .cert-placeholder {
     font-size: 12px;
-    color: #777;
+    color: #ffffff;
     font-style: italic;
     padding: 8px;
     background: #f0f0f0;
     border-radius: 4px;
 }
+
 
 /* Footer Divider */
 .footer-divider {
@@ -1294,7 +1313,7 @@ textarea.form-control {
 }
 
 .copyright-text {
-    color: #777;
+    color: #ffffff;
     font-size: 11px;
     text-align: center;
     font-family: Arial, sans-serif;

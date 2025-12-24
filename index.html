@@ -9,7 +9,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -29,7 +29,7 @@
                     <li class="nav-item with-popup">
                         <a href="about.html" class="nav-link">ABOUT US</a>
                         <div class="culture-popup">
-                            <a href="OurCulture.html" class="popup-link">Our Culture</a>
+                            <a href="OurCulture.html" class="popup-link">Our Culture</a> 
                         </div>
                     </li>
                     <li><a href="SeedtoShelf.html" class="nav-link">SEED TO SHELF</a></li>
@@ -61,24 +61,25 @@
             <h2 class="section-title">Why Potatoes?</h2>
             <p class="section-subtitle">The humble potato is easily the most genius crop ever discovered.</p>
 
+            <!-- In your potato-features section -->
             <div class="potato-features">
                 <div class="feature-card scale-hover">
                     <div class="feature-icon">
-                        <i class="fas fa-fire"></i>
+                        <i class="fas fa-fire"></i> <!-- Fire icon -->
                     </div>
                     <h3 class="feature-title">BOIL THEM, BAKE THEM OR FRY THEM, THEY NEVER DISAPPOINT.</h3>
                 </div>
 
                 <div class="feature-card scale-hover">
                     <div class="feature-icon">
-                        <i class="fas fa-balance-scale"></i>
+                        <i class="fas fa-balance-scale"></i> <!-- Scale icon -->
                     </div>
                     <h3 class="feature-title">ONE MEDIUM SIZED POTATO HAS MORE POTASSIUM THAN A BANANA.</h3>
                 </div>
 
                 <div class="feature-card scale-hover">
                     <div class="feature-icon">
-                        <i class="fas fa-heartbeat"></i>
+                        <i class="fas fa-heartbeat"></i> <!-- Heartbeat icon -->
                     </div>
                     <h3 class="feature-title">WITH JUST 110 CALORIES, A MEDIUM SIZED POTATO PROVIDES 30% OF YOUR DAILY
                         VALUE OF VITAMIN C.</h3>
@@ -318,7 +319,7 @@
                         <p class="footer-text"><strong>Sales</strong>: sales@hyfunfoods.com</p>
                         <p class="footer-text"><strong>Inquiry</strong>: info@hyfunfoods.com</p>
                         <p class="footer-text">customerservice@hyfunfoods.com</p>
-                        <p class="footer-text"><strong>Ph</strong>: +91 75750 02999</p>
+                        <p class="footer-text"><strong>Ph No.</strong>: +91 75750 02999</p>
                     </div>
                 </div>
 
@@ -340,7 +341,10 @@
                     <h3 class="footer-title">Certifications</h3>
                     <div class="certification-logos">
                         <!-- Certifications would go here -->
-                        <div class="cert-placeholder">Certification Logos</div>
+                        <div class="certification-logos">
+                            <img src="./image/brc.jpeg" alt="BRC Certification">
+                            <img src="./image/fssai.jpg" alt="fssai Certification">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -354,69 +358,7 @@
             </div>
         </div>
     </footer>
-    <script>
-        // Animation on scroll
-        document.addEventListener('DOMContentLoaded', function () {
-            const animatedElements = document.querySelectorAll('.fade-in, .slide-up, .slide-right');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            });
-
-            animatedElements.forEach(el => observer.observe(el));
-
-            // Mobile menu toggle
-            const mobileMenu = document.getElementById('mobile-menu');
-            const navMenu = document.querySelector('.nav-menu');
-
-            if (mobileMenu) {
-                mobileMenu.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('active');
-                    navMenu.classList.toggle('active');
-                });
-            }
-
-            // Close mobile menu when clicking a link
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.remove('active');
-                    navMenu.classList.remove('active');
-                });
-            });
-
-            // Header scroll effect
-            window.addEventListener('scroll', () => {
-                const header = document.querySelector('header');
-                if (window.scrollY > 100) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            });
-
-            // Mobile handling for culture popup
-            const aboutItem = document.querySelector('.nav-item.with-popup');
-            if (aboutItem && mobileMenu) {
-                // For mobile, make the popup clickable
-                if (window.innerWidth <= 768) {
-                    const aboutLink = aboutItem.querySelector('.nav-link');
-                    aboutLink.addEventListener('click', function (e) {
-                        if (navMenu.classList.contains('active')) {
-                            e.preventDefault();
-                            aboutItem.classList.toggle('active');
-                        }
-                    });
-                }
-            }
-        });
-    </script>
+    <script src="index.js"></script>
 
 </body>
 
